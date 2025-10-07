@@ -10,7 +10,7 @@ name: Run Cucumber Tests and Import to Xray
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
 
 jobs:
@@ -38,11 +38,20 @@ jobs:
           response=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
             -H "Content-Type: application/json" \
             -d '{"client_id":"${{ secrets.XRAY_CLIENT_ID }}","client_secret":"${{ secrets.XRAY_CLIENT_SECRET }}"}')
-          echo "token=$response" >> $GITHUB_OUTPUT
+          # Extract the token from the response
+          token=$(echo "$response" | jq -r '.token')
+          echo "token=$token" >> $GITHUB_ENV
+
+      - name: Check if Cucumber Report Exists
+        run: |
+          if [ ! -f target/cucumber-report.json ]; then
+            echo "Cucumber report not found. Aborting import."
+            exit 1
+          fi
 
       - name: Import Cucumber Results to Xray
         run: |
           curl -s -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/cucumber" \
-            -H "Authorization: Bearer ${{ steps.xray-auth.outputs.token }}" \
+            -H "Authorization: Bearer ${{ env.token }}" \
             -H "Content-Type: application/json" \
             --data @target/cucumber-report.json
