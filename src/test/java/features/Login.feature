@@ -1,18 +1,35 @@
 Feature: App Login
 
-Scenario Outline: Home page login1
-Given User is on Login page
+Background:
+Given user launches the url
+When user clicks on login button
+And user navigates to login homepage
+
+@MobileTest
+Scenario: User Home page login
+Given Valid User is on Login page
+When User logs in with credetials usr and pwd
+Then Homepage should be displayed
+And Response displayed is right
+
+@WebTest
+Scenario Outline: Admin and User Home page login
+Given <role> is on Login page
 When User logs in with credetials <username> and <password>
 Then Homepage <display> displayed
 And Response displayed is <result>
 
-#Scenario Outline: Home page login2
-#Given User is on Login page
-#When User logs in with credetials <username> and <password>
-#Then Homepage <display> displayed
-#And Response displayed is <result>
-
 Examples:
-|username|password|display|result|
-|pramod|123|should be|right|
-|ramesh|456|should not be|wrong|
+|role|username|password|display|result|
+|admin|pramod|123|should be|right|
+|invalid user|ramesh|456|should not be|wrong|
+
+@SmokeTest
+Scenario: Signup page
+Given user is on sign up page
+When user signs up into application
+| pramod |
+| ramesh |
+| pr@ra.com |
+| 7892817982 |
+Then user should be signed up
