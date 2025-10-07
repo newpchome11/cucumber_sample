@@ -45,4 +45,4 @@ jobs:
           curl -s -X POST "https://xray.cloud.getxray.app/api/v2/import/execution/cucumber" \
             -H "Authorization: Bearer ${{ steps.xray-auth.outputs.token }}" \
             -H "Content-Type: application/json" \
-            --data @target/cucumber-report.json
+            --data @target/cucumber_report.json
