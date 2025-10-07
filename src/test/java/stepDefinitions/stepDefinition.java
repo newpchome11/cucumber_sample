@@ -68,15 +68,15 @@ public class stepDefinition {
     
     @Given("chatbot is loaded")
     public void chatbot_is_loaded() {
-    	 System.out.println("chatbot is loaded");
+    	 System.out.println(" print statement chatbot is loaded");
     }
     @When("a question is asked to the chatbot")
     public void a_question_is_asked_to_the_chatbot() {
-    	 System.out.println("a question is asked to the chatbot");
+    	 System.out.println(" print statement a question is asked to the chatbot");
     }
     @Then("chatbot should respond")
     public void chatbot_should_respond() {
-    	 System.out.println("chatbot should respond");
+    	 System.out.println(" print statement chatbot should respond");
     }
     
 }
