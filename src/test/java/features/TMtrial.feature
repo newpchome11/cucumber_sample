@@ -20,7 +20,7 @@
 Feature: Chatbot testing
 
 
-  @SanityTest @SCRUM-5
+  @SanityTest @SCRUM-8
   Scenario: Successful chatbot response
     Given chatbot is loaded
     When a question is asked to the chatbot
