@@ -9,20 +9,16 @@
 name: Run Maven Cucumber Tests (Triggered by Xray)
 
 on:
+  # Listen to repository_dispatch events with a specific type (xray-trigger)
   repository_dispatch:
-    types: [xray-trigger]
-  workflow_dispatch:  
-    inputs:
-      test_execution_key:
-        description: 'Test Execution Key for Cucumber tests'
-        required: true
+    types: [xray-trigger]  # This will listen for the "xray-trigger" event type
 
 jobs:
   run-tests:
     runs-on: ubuntu-latest
 
     env:
-      TEST_EXECUTION_KEY: ${{github.event.client_payload.test_execution_key}}
+      TEST_EXECUTION_KEY: ${{ github.event.client_payload.test_execution_key }}
 
     steps:
       - name: Checkout repository
