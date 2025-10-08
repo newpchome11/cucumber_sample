@@ -11,6 +11,11 @@ name: Run Maven Cucumber Tests (Triggered by Xray)
 on:
   repository_dispatch:
     types: [xray-trigger]
+  workflow_dispatch:  
+    inputs:
+      test_execution_key:
+        description: 'Test Execution Key for Cucumber tests'
+        required: true
 
 jobs:
   run-tests:
