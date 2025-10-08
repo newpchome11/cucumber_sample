@@ -1,0 +1,52 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Run Maven Cucumber Tests (Triggered by Xray)
+
+on:
+  repository_dispatch:
+    types: [xray-trigger]
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+
+    env:
+      TEST_EXECUTION_KEY: ${{ github.event.client_payload.test_execution_key }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build and run Cucumber tests
+        run: |
+          echo "Running tests for Test Execution Key: $TEST_EXECUTION_KEY"
+          mvn clean test -Dcucumber.filter.tags="@${TEST_EXECUTION_KEY}"
+
+      - name: Get Xray Auth Token
+        id: xray-auth
+        run: |
+          response=$(curl -s -X POST https://xray.cloud.getxray.app/api/v2/authenticate \
+            -H "Content-Type: application/json" \
+            -d '{"client_id":"${{ secrets.XRAY_CLIENT_ID }}","client_secret":"${{ secrets.XRAY_CLIENT_SECRET }}"}')
+          echo "token=$response" >> $GITHUB_OUTPUT
+
+      - name: Upload Cucumber results to Xray Cloud
+        run: |
+          echo "Uploading Cucumber results to Xray Cloud for $TEST_EXECUTION_KEY"
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -H "Authorization: Bearer ${{ steps.xray-auth.outputs.token }}" \
+               --data @target/cucumber.json \
+               "https://xray.cloud.getxray.app/api/v2/import/execution/cucumber?testExecutionKey=$TEST_EXECUTION_KEY"
